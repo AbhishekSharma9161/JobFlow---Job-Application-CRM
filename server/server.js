@@ -15,18 +15,49 @@ const app = express();
 /* ================= DB ================= */
 connectDB();
 
-/* ================= MIDDLEWARE ================= */
-app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:5173",
-  credentials: true,
-}));
+/* ================= CORS ================= */
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+  "http://localhost:3000",
+];
 
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (mobile apps, curl, Render health checks)
+      if (!origin) return callback(null, true);
+
+      // Allow any Vercel preview/production deployment for this project
+      const isVercelPreview = /https:\/\/job-flow-job-application.*\.vercel\.app$/.test(origin);
+
+      // Allow exact matches from allowedOrigins list
+      const isExactMatch = allowedOrigins.filter(Boolean).includes(origin);
+
+      if (isVercelPreview || isExactMatch) {
+        callback(null, true);
+      } else {
+        console.error(`❌ CORS blocked origin: ${origin}`);
+        callback(new Error(`CORS policy: origin ${origin} not allowed`));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+/* ================= MIDDLEWARE ================= */
 app.use(express.json());
 app.use(cookieParser());
 
-/* ================= ROOT ROUTE (FIX) ================= */
+/* ================= ROOT ROUTE ================= */
 app.get("/", (req, res) => {
-  res.send("🚀 JobFlow API is running");
+  res.json({
+    message: "🚀 JobFlow API is running",
+    status: "OK",
+    timestamp: new Date(),
+  });
 });
 
 /* ================= ROUTES ================= */
@@ -50,4 +81,5 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`✅ Allowed CLIENT_URL: ${process.env.CLIENT_URL}`);
 });
