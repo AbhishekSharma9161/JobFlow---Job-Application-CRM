@@ -33,23 +33,23 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="p-6 lg:p-8 space-y-8 animate-fade-in">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold text-[var(--text)]">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[var(--text)]">
             Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 17 ? "afternoon" : "evening"},{" "}
             <span className="text-brand-600">{user?.name?.split(" ")[0]}</span> 👋
           </h1>
           <p className="text-[var(--text-muted)] text-sm mt-1">Here's your job search overview</p>
         </div>
-        <button onClick={() => setModalOpen(true)} className="btn-primary">
-          <Plus size={16} /> Add Application
+        <button onClick={() => setModalOpen(true)} className="btn-primary flex-shrink-0">
+          <Plus size={16} /> <span className="hidden sm:inline">Add Application</span><span className="sm:hidden">Add</span>
         </button>
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {metricCards.map(({ label, value, icon: Icon, color, change }) => (
           <div key={label} className="card p-5 hover:shadow-md transition-shadow">
             <div className="flex items-start justify-between mb-4">
@@ -70,14 +70,14 @@ export default function Dashboard() {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Bar chart */}
-        <div className="card p-6 lg:col-span-2">
+        <div className="card p-4 sm:p-6 lg:col-span-2">
           <h3 className="font-bold text-[var(--text)] mb-1">Weekly Activity</h3>
-          <p className="text-xs text-[var(--text-muted)] mb-5">Applications submitted last 7 days</p>
+          <p className="text-xs text-[var(--text-muted)] mb-4 sm:mb-5">Applications submitted last 7 days</p>
           {stats?.weeklyActivity?.length ? (
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={stats.weeklyActivity} barSize={28}>
+            <ResponsiveContainer width="100%" height={180}>
+              <BarChart data={stats.weeklyActivity} barSize={24}>
                 <XAxis dataKey="_id" tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} allowDecimals={false} />
                 <Tooltip
@@ -88,19 +88,19 @@ export default function Dashboard() {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[220px] flex items-center justify-center text-[var(--text-muted)] text-sm">No activity data yet</div>
+            <div className="h-[180px] flex items-center justify-center text-[var(--text-muted)] text-sm">No activity data yet</div>
           )}
         </div>
 
         {/* Pie chart */}
-        <div className="card p-6">
+        <div className="card p-4 sm:p-6">
           <h3 className="font-bold text-[var(--text)] mb-1">Status Mix</h3>
           <p className="text-xs text-[var(--text-muted)] mb-4">Current pipeline breakdown</p>
           {stats?.statusDistribution?.length ? (
             <>
-              <ResponsiveContainer width="100%" height={160}>
+              <ResponsiveContainer width="100%" height={150}>
                 <PieChart>
-                  <Pie data={stats.statusDistribution} dataKey="count" nameKey="_id" cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={3}>
+                  <Pie data={stats.statusDistribution} dataKey="count" nameKey="_id" cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={3}>
                     {stats.statusDistribution.map((_, i) => (
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
                     ))}
@@ -121,15 +121,15 @@ export default function Dashboard() {
               </div>
             </>
           ) : (
-            <div className="h-[160px] flex items-center justify-center text-[var(--text-muted)] text-sm">No data yet</div>
+            <div className="h-[150px] flex items-center justify-center text-[var(--text-muted)] text-sm">No data yet</div>
           )}
         </div>
       </div>
 
       {/* Bottom row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent applications */}
-        <div className="card p-6">
+        <div className="card p-4 sm:p-6">
           <h3 className="font-bold text-[var(--text)] mb-4">Recent Applications</h3>
           {recent.length ? (
             <div className="space-y-3">
@@ -158,7 +158,7 @@ export default function Dashboard() {
         </div>
 
         {/* Reminders */}
-        <div className="card p-6">
+        <div className="card p-4 sm:p-6">
           <h3 className="font-bold text-[var(--text)] mb-4 flex items-center gap-2">
             <Bell size={16} className="text-amber-500" /> Follow-up Reminders
           </h3>

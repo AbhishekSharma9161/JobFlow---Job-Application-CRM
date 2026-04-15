@@ -64,7 +64,7 @@ export default function ApplicationModal({ isOpen, onClose, editData = null }) {
       <form onSubmit={handleSubmit} className="space-y-5">
         
         {/* Row 1 */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Company *">
             <input className="input" value={form.company} onChange={(e) => set("company", e.target.value)} placeholder="Google, Meta..." required />
           </Field>
@@ -74,7 +74,7 @@ export default function ApplicationModal({ isOpen, onClose, editData = null }) {
         </div>
 
         {/* Row 2 */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Location">
             <input className="input" value={form.location} onChange={(e) => set("location", e.target.value)} placeholder="Bangalore, Remote..." />
           </Field>
@@ -84,7 +84,7 @@ export default function ApplicationModal({ isOpen, onClose, editData = null }) {
         </div>
 
         {/* Row 3 */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Field label="Status">
             <select className="input" value={form.status} onChange={(e) => set("status", e.target.value)}>
               {ALL_STATUSES.map((s) => <option key={s}>{s}</option>)}
@@ -103,7 +103,7 @@ export default function ApplicationModal({ isOpen, onClose, editData = null }) {
         </div>
 
         {/* Row 4 */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Applied Date">
             <input type="date" className="input" value={form.appliedDate} onChange={(e) => set("appliedDate", e.target.value)} />
           </Field>
@@ -113,7 +113,7 @@ export default function ApplicationModal({ isOpen, onClose, editData = null }) {
         </div>
 
         {/* Row 5 */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Follow-up Date">
             <input type="date" className="input" value={form.followUpDate} onChange={(e) => set("followUpDate", e.target.value)} />
           </Field>

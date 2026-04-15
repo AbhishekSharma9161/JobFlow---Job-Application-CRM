@@ -39,13 +39,13 @@ export default function Board() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border)] bg-[var(--surface)]">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-[var(--border)] bg-[var(--surface)]">
         <div>
-          <h1 className="text-xl font-extrabold text-[var(--text)]">Kanban Board</h1>
+          <h1 className="text-lg sm:text-xl font-extrabold text-[var(--text)]">Kanban Board</h1>
           <p className="text-xs text-[var(--text-muted)] mt-0.5">Drag cards to update status</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm text-[var(--text-muted)]">
+          <span className="text-sm text-[var(--text-muted)] hidden sm:inline">
             <span className="font-bold text-[var(--text)]">{applications.length}</span> total
           </span>
           <button onClick={openAdd} className="btn-primary">
@@ -57,7 +57,7 @@ export default function Board() {
       {/* Board */}
       <div className="flex-1 overflow-x-auto overflow-y-hidden">
         <DragDropContext onDragEnd={onDragEnd}>
-          <div className="flex gap-3 h-full p-5 w-max min-w-full">
+          <div className="flex gap-3 h-full p-3 sm:p-5 w-max min-w-full">
             {columns.map(({ status, items }) => {
               const colors = STATUS_COLORS[status];
               const isCollapsed = collapsed[status];
@@ -66,7 +66,7 @@ export default function Board() {
                 <div
                   key={status}
                   className={`flex flex-col bg-[var(--surface-2)] rounded-2xl border border-[var(--border)] transition-all duration-200 ${
-                    isCollapsed ? "w-12" : "w-64"
+                    isCollapsed ? "w-12" : "w-60 sm:w-64"
                   }`}
                   style={{ minHeight: "calc(100vh - 180px)", maxHeight: "calc(100vh - 180px)" }}
                 >

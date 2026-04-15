@@ -64,7 +64,7 @@ export default function Reminders() {
 
         <button
           onClick={() => markDone(app)}
-          className="opacity-0 group-hover:opacity-100 flex items-center gap-2 px-3 py-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-xl text-xs font-semibold hover:bg-emerald-100 transition-all"
+          className="sm:opacity-0 sm:group-hover:opacity-100 flex items-center gap-2 px-3 py-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-xl text-xs font-semibold hover:bg-emerald-100 transition-all flex-shrink-0"
         >
           <CheckCircle2 size={14} /> Mark Done
         </button>
@@ -102,11 +102,11 @@ export default function Reminders() {
   const total = reminders.dueToday.length + reminders.overdue.length;
 
   return (
-    <div className="p-6 lg:p-8 animate-fade-in">
+    <div className="p-4 sm:p-6 lg:p-8 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6 sm:mb-8">
         <div>
-          <h1 className="text-xl font-extrabold text-[var(--text)] flex items-center gap-2">
+          <h1 className="text-lg sm:text-xl font-extrabold text-[var(--text)] flex items-center gap-2">
             <Bell size={20} className="text-amber-500" /> Follow-up Reminders
           </h1>
           <p className="text-xs text-[var(--text-muted)] mt-1">
@@ -114,7 +114,7 @@ export default function Reminders() {
           </p>
         </div>
         <button onClick={fetchReminders} disabled={loading} className="btn-secondary">
-          <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Refresh
+          <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> <span className="hidden sm:inline">Refresh</span>
         </button>
       </div>
 

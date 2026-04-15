@@ -5,13 +5,13 @@ import {
   ListTodo,
   Bell,
   LogOut,
-  Briefcase,
   Moon,
   Sun,
   ChevronLeft,
   ChevronRight,
+  X,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { getInitials } from "../../utils/dateHelpers";
 
@@ -22,7 +22,7 @@ const NAV = [
   { to: "/reminders", icon: Bell, label: "Reminders" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ mobileOpen, onMobileClose }) {
   const [collapsed, setCollapsed] = useState(false);
   const [dark, setDark] = useState(() =>
     document.documentElement.classList.contains("dark"),
@@ -40,21 +40,39 @@ export default function Sidebar() {
     navigate("/login");
   };
 
+  const handleNavClick = () => {
+    if (onMobileClose) onMobileClose();
+  };
+
   return (
     <aside
-      className={`relative flex flex-col h-screen bg-[var(--surface)] border-r border-[var(--border)] transition-all duration-300 ${collapsed ? "w-16" : "w-60"} flex-shrink-0`}
+      className={`
+        flex flex-col h-screen bg-[var(--surface)] border-r border-[var(--border)] transition-all duration-300 flex-shrink-0
+        fixed inset-y-0 left-0 z-30 lg:relative lg:translate-x-0
+        ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+        ${collapsed ? "w-16" : "w-60"}
+      `}
     >
-      {/* Toggle */}
+      {/* Mobile close button */}
+      <button
+        onClick={onMobileClose}
+        className="absolute top-4 right-4 z-10 p-1.5 rounded-lg hover:bg-[var(--surface-2)] text-[var(--text-muted)] lg:hidden"
+        aria-label="Close menu"
+      >
+        <X size={18} />
+      </button>
+
+      {/* Desktop collapse toggle */}
       <button
         onClick={() => setCollapsed((c) => !c)}
-        className="absolute -right-3 top-6 z-10 w-6 h-6 rounded-full bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center shadow-sm hover:shadow-md transition-shadow text-[var(--text-muted)]"
+        className="absolute -right-3 top-6 z-10 w-6 h-6 rounded-full bg-[var(--surface)] border border-[var(--border)] items-center justify-center shadow-sm hover:shadow-md transition-shadow text-[var(--text-muted)] hidden lg:flex"
       >
         {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
       </button>
 
       {/* Logo */}
       <div className={`flex items-center gap-3 px-4 py-5 border-b border-[var(--border)] ${collapsed ? "justify-center" : ""}`}>
-        <div className="p-1 bg-white rounded-full shadow-sm">
+        <div className="p-1 bg-white rounded-full shadow-sm flex-shrink-0">
           <img
             src="/logo.webp"
             alt="Logo"
@@ -80,6 +98,7 @@ export default function Sidebar() {
           <NavLink
             key={to}
             to={to}
+            onClick={handleNavClick}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 ${
                 isActive

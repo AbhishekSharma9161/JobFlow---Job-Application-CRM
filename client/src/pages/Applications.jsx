@@ -2,13 +2,68 @@ import { useEffect, useState } from "react";
 import { useApplicationStore } from "../store/applicationStore";
 import ApplicationRow from "../components/applications/ApplicationRow";
 import ApplicationModal from "../components/applications/ApplicationModal";
-import { StatusBadge } from "../components/ui/Badge";
+import { StatusBadge, SourceBadge } from "../components/ui/Badge";
 import { ALL_STATUSES, ALL_SOURCES } from "../utils/statusColors";
 import { useDebounce } from "../hooks/useDebounce";
+import { formatDate, getCompanyInitial, getCompanyColor } from "../utils/dateHelpers";
 import {
   Search, Plus, Trash2, X, SlidersHorizontal,
-  ArrowUpDown, ArrowUp, ArrowDown, FileX
+  ArrowUpDown, ArrowUp, ArrowDown, FileX, Pencil, ExternalLink, MapPin, Calendar
 } from "lucide-react";
+
+// Mobile card component for small screens
+function MobileAppCard({ app, onEdit, isSelected, onToggleSelect }) {
+  const { deleteApplication } = useApplicationStore();
+  const gradient = getCompanyColor(app.company);
+  return (
+    <div className={`card p-4 transition-all ${isSelected ? "ring-2 ring-brand-500" : ""}`}>
+      <div className="flex items-start gap-3">
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={() => onToggleSelect(app._id)}
+          className="mt-1 rounded border-[var(--border)] text-brand-600 focus:ring-brand-500 flex-shrink-0"
+        />
+        <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold text-sm flex-shrink-0`}>
+          {getCompanyInitial(app.company)}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="font-semibold text-sm text-[var(--text)] truncate">{app.company}</p>
+              <p className="text-xs text-[var(--text-muted)] truncate">{app.role}</p>
+            </div>
+            <StatusBadge status={app.status} size="xs" />
+          </div>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
+            {app.location && (
+              <span className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
+                <MapPin size={10} /> {app.location}
+              </span>
+            )}
+            <span className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
+              <Calendar size={10} /> {formatDate(app.appliedDate)}
+            </span>
+            <SourceBadge source={app.source} />
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center justify-end gap-1 mt-3 pt-3 border-t border-[var(--border)]">
+        {app.jobUrl && (
+          <a href={app.jobUrl} target="_blank" rel="noopener noreferrer" className="btn-ghost p-1.5">
+            <ExternalLink size={14} />
+          </a>
+        )}
+        <button onClick={() => onEdit(app)} className="btn-ghost p-1.5">
+          <Pencil size={14} />
+        </button>
+        <button onClick={() => deleteApplication(app._id)} className="btn-ghost p-1.5 hover:text-red-500">
+          <Trash2 size={14} />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function Applications() {
   const {
@@ -59,10 +114,10 @@ export default function Applications() {
   return (
     <div className="flex flex-col h-full animate-fade-in">
       {/* Header */}
-      <div className="px-6 py-5 border-b border-[var(--border)] bg-[var(--surface)]">
-        <div className="flex items-center justify-between mb-4">
+      <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-[var(--border)] bg-[var(--surface)]">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
           <div>
-            <h1 className="text-xl font-extrabold text-[var(--text)]">Applications</h1>
+            <h1 className="text-lg sm:text-xl font-extrabold text-[var(--text)]">Applications</h1>
             <p className="text-xs text-[var(--text-muted)] mt-0.5">
               {applications.length} application{applications.length !== 1 ? "s" : ""}
               {hasFilters && " (filtered)"}
@@ -72,28 +127,28 @@ export default function Applications() {
             {selectedIds.length > 0 && (
               <button
                 onClick={() => { bulkDelete(); clearSelected(); }}
-                className="inline-flex items-center gap-2 px-3 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl text-sm font-semibold hover:bg-red-100 transition-colors"
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl text-xs sm:text-sm font-semibold hover:bg-red-100 transition-colors"
               >
-                <Trash2 size={14} /> Delete {selectedIds.length}
+                <Trash2 size={13} /> <span className="hidden sm:inline">Delete</span> {selectedIds.length}
               </button>
             )}
             <button onClick={() => setShowFilters((v) => !v)} className={`btn-secondary gap-2 ${showFilters ? "ring-2 ring-brand-500/40" : ""}`}>
-              <SlidersHorizontal size={14} /> Filters
+              <SlidersHorizontal size={14} /> <span className="hidden sm:inline">Filters</span>
             </button>
             <button onClick={openAdd} className="btn-primary">
-              <Plus size={15} /> Add
+              <Plus size={15} /> <span className="hidden sm:inline">Add</span>
             </button>
           </div>
         </div>
 
         {/* Search + Filters */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {/* Search */}
-          <div className="relative flex-1 min-w-[200px] max-w-sm">
+          <div className="relative flex-1 min-w-[160px] max-w-sm">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
             <input
               className="input pl-9 py-2"
-              placeholder="Search company, role, location..."
+              placeholder="Search company, role..."
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
             />
@@ -129,7 +184,7 @@ export default function Applications() {
 
               {hasFilters && (
                 <button onClick={() => { clearFilters(); setLocalSearch(""); }} className="btn-ghost text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
-                  <X size={14} /> Clear filters
+                  <X size={14} /> Clear
                 </button>
               )}
             </>
@@ -147,8 +202,8 @@ export default function Applications() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="flex-1 overflow-auto px-6 py-4">
+      {/* Table / Cards */}
+      <div className="flex-1 overflow-auto px-4 sm:px-6 py-4">
         {isLoading ? (
           <div className="flex items-center justify-center h-48">
             <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
@@ -165,57 +220,73 @@ export default function Applications() {
             )}
           </div>
         ) : (
-          <div className="card overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[var(--border)] bg-[var(--surface-2)]">
-                  <th className="pl-4 py-3 w-10">
-                    <input
-                      type="checkbox"
-                      checked={allSelected}
-                      onChange={toggleAll}
-                      className="rounded border-[var(--border)] text-brand-600 focus:ring-brand-500"
+          <>
+            {/* Desktop table */}
+            <div className="card overflow-hidden hidden sm:block">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-[var(--border)] bg-[var(--surface-2)]">
+                    <th className="pl-4 py-3 w-10">
+                      <input
+                        type="checkbox"
+                        checked={allSelected}
+                        onChange={toggleAll}
+                        className="rounded border-[var(--border)] text-brand-600 focus:ring-brand-500"
+                      />
+                    </th>
+                    <th className="py-3 px-3 text-left">
+                      <button onClick={() => toggleSort("company")} className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider hover:text-[var(--text)]">
+                        Company <SortIcon field="company" />
+                      </button>
+                    </th>
+                    <th className="py-3 px-3 text-left hidden md:table-cell">
+                      <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Location</span>
+                    </th>
+                    <th className="py-3 px-3 text-left">
+                      <button onClick={() => toggleSort("status")} className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider hover:text-[var(--text)]">
+                        Status <SortIcon field="status" />
+                      </button>
+                    </th>
+                    <th className="py-3 px-3 text-left hidden lg:table-cell">
+                      <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Source</span>
+                    </th>
+                    <th className="py-3 px-3 text-left hidden lg:table-cell">
+                      <button onClick={() => toggleSort("appliedDate")} className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider hover:text-[var(--text)]">
+                        Applied <SortIcon field="appliedDate" />
+                      </button>
+                    </th>
+                    <th className="py-3 pr-4 text-right">
+                      <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {applications.map((app) => (
+                    <ApplicationRow
+                      key={app._id}
+                      app={app}
+                      onEdit={openEdit}
+                      isSelected={selectedIds.includes(app._id)}
+                      onToggleSelect={toggleSelected}
                     />
-                  </th>
-                  <th className="py-3 px-3 text-left">
-                    <button onClick={() => toggleSort("company")} className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider hover:text-[var(--text)]">
-                      Company <SortIcon field="company" />
-                    </button>
-                  </th>
-                  <th className="py-3 px-3 text-left hidden md:table-cell">
-                    <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Location</span>
-                  </th>
-                  <th className="py-3 px-3 text-left">
-                    <button onClick={() => toggleSort("status")} className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider hover:text-[var(--text)]">
-                      Status <SortIcon field="status" />
-                    </button>
-                  </th>
-                  <th className="py-3 px-3 text-left hidden lg:table-cell">
-                    <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Source</span>
-                  </th>
-                  <th className="py-3 px-3 text-left hidden lg:table-cell">
-                    <button onClick={() => toggleSort("appliedDate")} className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider hover:text-[var(--text)]">
-                      Applied <SortIcon field="appliedDate" />
-                    </button>
-                  </th>
-                  <th className="py-3 pr-4 text-right">
-                    <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {applications.map((app) => (
-                  <ApplicationRow
-                    key={app._id}
-                    app={app}
-                    onEdit={openEdit}
-                    isSelected={selectedIds.includes(app._id)}
-                    onToggleSelect={toggleSelected}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile card list */}
+            <div className="sm:hidden space-y-3">
+              {applications.map((app) => (
+                <MobileAppCard
+                  key={app._id}
+                  app={app}
+                  onEdit={openEdit}
+                  isSelected={selectedIds.includes(app._id)}
+                  onToggleSelect={toggleSelected}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
 
