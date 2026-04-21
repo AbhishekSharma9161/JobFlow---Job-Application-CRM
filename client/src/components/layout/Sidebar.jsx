@@ -14,6 +14,7 @@ import {
 import { useState } from "react";
 import { useAuthStore } from "../../store/authStore";
 import { getInitials } from "../../utils/dateHelpers";
+import { useTheme } from "../../hooks/useTheme";
 
 const NAV = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -24,16 +25,9 @@ const NAV = [
 
 export default function Sidebar({ mobileOpen, onMobileClose }) {
   const [collapsed, setCollapsed] = useState(false);
-  const [dark, setDark] = useState(() =>
-    document.documentElement.classList.contains("dark"),
-  );
+  const { isDark, toggleTheme } = useTheme();
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
-
-  const toggleDark = () => {
-    document.documentElement.classList.toggle("dark");
-    setDark((d) => !d);
-  };
 
   const handleLogout = async () => {
     await logout();
@@ -116,11 +110,11 @@ export default function Sidebar({ mobileOpen, onMobileClose }) {
       {/* Footer */}
       <div className="border-t border-[var(--border)] px-2 py-3 space-y-1">
         <button
-          onClick={toggleDark}
+          onClick={toggleTheme}
           className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] transition-all ${collapsed ? "justify-center" : ""}`}
         >
-          {dark ? <Sun size={17} /> : <Moon size={17} />}
-          {!collapsed && (dark ? "Light Mode" : "Dark Mode")}
+          {isDark ? <Sun size={17} /> : <Moon size={17} />}
+          {!collapsed && (isDark ? "Light Mode" : "Dark Mode")}
         </button>
 
         <button
